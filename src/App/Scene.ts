@@ -1,5 +1,5 @@
 import { AnimationClip, AnimationMixer, BoxGeometry, Camera, Color, EquirectangularReflectionMapping, Fog, FogExp2, Mesh, MeshBasicMaterial, MeshNormalMaterial, MeshStandardMaterial, Object3D, PerspectiveCamera, Scene, Vector3 } from "three";
-import { loadGltf, loadHdri, createCamera } from "./utils";
+import { loadGltf, loadHdri } from "./utils";
 
 import URL_MODEL from 'assets/balls.glb';
 import URL_HDRI  from 'assets/studio.hdr';
@@ -7,12 +7,10 @@ import { MATERIAL_PROPS } from "./constants";
 
 export class AppScene {
   public scene: Scene;
-  public camera: Camera;
   private mixer: AnimationMixer;
 
-  constructor() {
+  constructor(public camera) {
     this.scene = new Scene();
-    this.camera = createCamera();
 
     Promise.all([
       loadHdri(URL_HDRI),

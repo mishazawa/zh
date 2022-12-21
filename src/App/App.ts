@@ -3,17 +3,16 @@ import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer
 import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass';
 import { ShaderPass } from 'three/examples/jsm/postprocessing/ShaderPass';
 
-import {FXAAShader} from 'three/examples/jsm/shaders/FXAAShader';
-
-import OverlayGradient from './shaders/overlayGradient';
-
-// debug
+import { FXAAShader    } from 'three/examples/jsm/shaders/FXAAShader';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
-import Stats from 'three/examples/jsm/libs/stats.module';
-import { ORBIT_DAMPING } from './constants';
 
+import { ORBIT_DAMPING } from './constants';
+import OverlayGradient from './shaders/overlayGradient';
+import { AppScene } from './Scene';
+import { createCamera } from './utils';
 
 export class App {
+  private scene;
   private clock;
   private renderer;
   private composer;
@@ -21,18 +20,22 @@ export class App {
   private stats;
   private controls;
 
-  constructor(private scene, canvas) {
+  constructor(canvas) {
     this.clock = new Clock();
     this.init(canvas);
+    this.onResize();
     this.animate();
   }
 
-  public static get dimensions() {
-    return [window.innerWidth, window.innerHeight];
+  public get dimensions() {
+    const container = this.renderer.domElement.parentElement;
+
+    return [container.offsetWidth, container.offsetHeight];
   }
 
-  public static get aspect() {
-    return window.innerWidth / window.innerHeight;
+  public  get aspect() {
+    const [w, h] = this.dimensions;
+    return w / h;
   }
 
   private init(canvas) {
@@ -43,7 +46,7 @@ export class App {
       canvas,
     });
 
-    const [w, h] = App.dimensions;
+    const [w, h] = this.dimensions;
 
     this.renderer.setSize(w, h);
     this.renderer.setPixelRatio(window.devicePixelRatio);
@@ -55,7 +58,10 @@ export class App {
 
     this.composer = new EffectComposer(this.renderer);
 
+    this.scene = new AppScene(createCamera(this.aspect));
+
     const { scene, camera } = this.scene;
+
     this.composer.insertPass(new RenderPass(scene, camera), 0)
     this.composer.addPass(this.antialiasPass());
     this.composer.addPass(new ShaderPass(OverlayGradient));
@@ -65,15 +71,6 @@ export class App {
     this.controls.enableZoom = false;
     this.controls.enableDamping = true;
     this.controls.dampingFactor = ORBIT_DAMPING;
-
-
-    if ((<any>window).DEBUG) {
-      this.stats = Stats();
-      const container = document.createElement('div');
-
-      document.body.appendChild(container);
-      container.appendChild( this.stats.dom );
-    }
   }
 
   public animate() {
@@ -92,12 +89,25 @@ export class App {
     }
   }
 
+  onResize() {
+
+    const onWindowResize = () => {
+        this.scene.camera.aspect = this.aspect;
+
+        this.scene.camera.updateProjectionMatrix();
+
+        this.renderer.setSize( ...this.dimensions );
+    }
+
+    window.addEventListener( 'resize', onWindowResize, false );
+  }
+
   antialiasPass () {
     const fxaaPass = new ShaderPass(FXAAShader);
     const pixelRatio = this.renderer.getPixelRatio();
-
-    fxaaPass.material.uniforms[ 'resolution' ].value.x = 1 / ( App.dimensions[0] * pixelRatio );
-    fxaaPass.material.uniforms[ 'resolution' ].value.y = 1 / ( App.dimensions[1] * pixelRatio );
+    const [w, h] = this.dimensions;
+    fxaaPass.material.uniforms[ 'resolution' ].value.x = 1 / ( w * pixelRatio );
+    fxaaPass.material.uniforms[ 'resolution' ].value.y = 1 / ( h * pixelRatio );
     return fxaaPass
   }
 }
