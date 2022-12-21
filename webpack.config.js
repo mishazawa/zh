@@ -40,7 +40,7 @@ module.exports = {
       App: path.resolve(__dirname, './src/App/'),
     },
   },
-  devtool: 'inline-source-map',
+  // devtool: 'inline-source-map', // uncomment
   devServer: {
     static: './dist',
   },
