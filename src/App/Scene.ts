@@ -3,7 +3,7 @@ import { loadGltf, loadHdri } from "./utils";
 
 import URL_MODEL from 'assets/balls.glb';
 import URL_HDRI  from 'assets/studio.hdr';
-import { MATERIAL_PROPS } from "./constants";
+import { ANIMATION_SPEED, MATERIAL_PROPS } from "./constants";
 
 export class AppScene {
   public scene: Scene;
@@ -47,7 +47,7 @@ export class AppScene {
     const currentClip = AnimationClip.findByName(animations, "noise");
 
     this.mixer = new AnimationMixer(scene);
-
+    this.mixer.clipAction(currentClip).timeScale = ANIMATION_SPEED;
     this.mixer.clipAction(currentClip).reset().play();
   }
 

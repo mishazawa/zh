@@ -2,7 +2,7 @@ import { ACESFilmicToneMapping, Clock, sRGBEncoding, WebGLRenderer } from 'three
 import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer';
 import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass';
 import { ShaderPass } from 'three/examples/jsm/postprocessing/ShaderPass';
-import Stats from 'three/examples/jsm/libs/stats.module';
+// import Stats from 'three/examples/jsm/libs/stats.module';
 
 import { FXAAShader    } from 'three/examples/jsm/shaders/FXAAShader';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
@@ -10,7 +10,9 @@ import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import { ORBIT_DAMPING, INTERSECTION_THRESHOLD } from './constants';
 import OverlayGradient from './shaders/overlayGradient';
 import { AppScene } from './Scene';
-import { createCamera } from './utils';
+import { createCamera, isMobile } from './utils';
+
+const IS_DESKTOP = !isMobile();
 
 export class App {
   private scene;
@@ -53,8 +55,6 @@ export class App {
     this.renderer.setSize(w, h);
     this.renderer.setPixelRatio(window.devicePixelRatio);
 
-    // this.renderer.physicallyCorrectLights = true;
-    // this.renderer.toneMapping = ACESFilmicToneMapping;
     this.renderer.outputEncoding = sRGBEncoding;
     this.renderer.toneMapping = ACESFilmicToneMapping;
 
@@ -65,22 +65,28 @@ export class App {
     const { scene, camera } = this.scene;
 
     this.composer.insertPass(new RenderPass(scene, camera), 0)
-    // this.composer.addPass(this.antialiasPass());
+
+    if (IS_DESKTOP) {
+      this.composer.addPass(this.antialiasPass());
+    }
+
     this.composer.addPass(new ShaderPass(OverlayGradient));
 
-    this.controls = new OrbitControls(camera, this.renderer.domElement);
-    this.controls.enablePan = false;
-    this.controls.enableZoom = false;
-    this.controls.enableDamping = true;
-    this.controls.dampingFactor = ORBIT_DAMPING;
-
-    if ((<any>window).DEBUG) {
-      this.stats = Stats();
-      const container = document.createElement('div');
-
-      document.body.appendChild(container);
-      container.appendChild( this.stats.dom );
+    if (IS_DESKTOP) {
+      this.controls = new OrbitControls(camera, this.renderer.domElement);
+      this.controls.enablePan = false;
+      this.controls.enableZoom = false;
+      this.controls.enableDamping = true;
+      this.controls.dampingFactor = ORBIT_DAMPING;
     }
+
+    // if ((<any>window).DEBUG) {
+    //   this.stats = Stats();
+    //   const container = document.createElement('div');
+
+    //   document.body.appendChild(container);
+    //   container.appendChild( this.stats.dom );
+    // }
   }
 
   public animate() {
@@ -106,9 +112,9 @@ export class App {
   onResize() {
 
     const onWindowResize = () => {
-        this.scene.camera.aspect = this.aspect;
-        this.scene.camera.updateProjectionMatrix();
-        this.renderer.setSize( ...this.dimensions );
+      this.scene.camera.aspect = this.aspect;
+      this.scene.camera.updateProjectionMatrix();
+      this.renderer.setSize( ...this.dimensions );
     }
 
     window.addEventListener( 'resize', onWindowResize, false );

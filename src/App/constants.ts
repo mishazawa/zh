@@ -2,7 +2,8 @@ import { Color, Vector2 } from "three";
 
 export const CAMERA_NEAR = 0.1;
 export const CAMERA_FAR  = 1000;
-export const CAMERA_FOV  = 50;
+export const CAMERA_FOV  = 34;
+
 
 export const MATERIAL_PROPS = {
   roughness: .1,
@@ -21,3 +22,4 @@ export const ORBIT_DAMPING = .1;
 
 export const INTERSECTION_THRESHOLD = .35;
 
+export const ANIMATION_SPEED = .5;
