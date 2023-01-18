@@ -2,7 +2,6 @@ import { ACESFilmicToneMapping, Clock, sRGBEncoding, WebGLRenderer } from 'three
 import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer';
 import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass';
 import { ShaderPass } from 'three/examples/jsm/postprocessing/ShaderPass';
-// import Stats from 'three/examples/jsm/libs/stats.module';
 
 import { FXAAShader    } from 'three/examples/jsm/shaders/FXAAShader';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
@@ -13,6 +12,8 @@ import { AppScene } from './Scene';
 import { createCamera, isMobile } from './utils';
 
 const IS_DESKTOP = !isMobile();
+
+
 
 export class App {
   private scene;
@@ -79,14 +80,6 @@ export class App {
       this.controls.enableDamping = true;
       this.controls.dampingFactor = ORBIT_DAMPING;
     }
-
-    // if ((<any>window).DEBUG) {
-    //   this.stats = Stats();
-    //   const container = document.createElement('div');
-
-    //   document.body.appendChild(container);
-    //   container.appendChild( this.stats.dom );
-    // }
   }
 
   public animate() {
@@ -96,7 +89,6 @@ export class App {
       const delta = this.clock.getDelta();
       this.scene.animate(delta);
       this.composer.render();
-      this.stats?.update();
       this.controls?.update();
     } catch (e) {
       this.stopAnimation();
@@ -141,4 +133,5 @@ export class App {
     fxaaPass.material.uniforms[ 'resolution' ].value.y = 1 / ( h * pixelRatio );
     return fxaaPass
   }
+
 }

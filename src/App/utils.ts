@@ -3,7 +3,6 @@ import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 import { RGBELoader } from 'three/examples/jsm/loaders/RGBELoader';
 import { CAMERA_FAR, CAMERA_FOV, CAMERA_NEAR } from './constants';
 
-
 export const loadGltf = url => new Promise((res, rej) => new GLTFLoader().load(url, data => res(data), undefined, rej));
 export const loadHdri = url => new Promise((res, rej) => new RGBELoader().load(url, data => res(data), undefined, rej));
 
@@ -14,6 +13,7 @@ export const createCamera = (aspect) => new PerspectiveCamera(
   CAMERA_FAR
 );
 
+// check is app open on mobile device
 export const isMobile = () => {
   const ua = navigator.userAgent||navigator.vendor|| (<any>window).opera;
 
@@ -22,3 +22,28 @@ export const isMobile = () => {
 
   return check1 || check2;
 };
+
+// lazy loaded stats module for meter FPS
+export const enableStats = () => {
+  let stats = null;
+  let frameId = 0;
+
+  const animate = () => {
+    frameId = window.requestAnimationFrame(animate);
+    if (stats) stats.update();
+  }
+
+  return import('three/examples/jsm/libs/stats.module').then((module) => {
+    stats = module.default();
+    const container = document.createElement('div');
+
+    document.body.appendChild(container);
+    container.appendChild(stats.dom);
+    animate();
+    return () => {
+      cancelAnimationFrame(frameId);
+      document.body.removeChild(container);
+    }
+  })
+
+}

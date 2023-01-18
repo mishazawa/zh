@@ -2,8 +2,8 @@ import './types.d';
 import "./index.scss";
 
 import { App } from './App/App';
+// import { enableStats } from 'App/utils';
 
-(<any>window).DEBUG = false;
 
 const container = document.createElement('div');
 container.className = 'cont';
@@ -16,4 +16,5 @@ document.body.appendChild(container);
 
 window.addEventListener('load', () => {
   const app = new App(canvas);
+
 })
