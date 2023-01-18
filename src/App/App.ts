@@ -2,11 +2,12 @@ import { ACESFilmicToneMapping, Clock, sRGBEncoding, WebGLRenderer } from 'three
 import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer';
 import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass';
 import { ShaderPass } from 'three/examples/jsm/postprocessing/ShaderPass';
+import Stats from 'three/examples/jsm/libs/stats.module';
 
 import { FXAAShader    } from 'three/examples/jsm/shaders/FXAAShader';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 
-import { ORBIT_DAMPING } from './constants';
+import { ORBIT_DAMPING, INTERSECTION_THRESHOLD } from './constants';
 import OverlayGradient from './shaders/overlayGradient';
 import { AppScene } from './Scene';
 import { createCamera } from './utils';
@@ -19,12 +20,13 @@ export class App {
   private frameId;
   private stats;
   private controls;
+  private intersectionObserver;
 
   constructor(canvas) {
     this.clock = new Clock();
     this.init(canvas);
     this.onResize();
-    this.animate();
+    this.onShow();
   }
 
   public get dimensions() {
@@ -63,7 +65,7 @@ export class App {
     const { scene, camera } = this.scene;
 
     this.composer.insertPass(new RenderPass(scene, camera), 0)
-    this.composer.addPass(this.antialiasPass());
+    // this.composer.addPass(this.antialiasPass());
     this.composer.addPass(new ShaderPass(OverlayGradient));
 
     this.controls = new OrbitControls(camera, this.renderer.domElement);
@@ -71,6 +73,14 @@ export class App {
     this.controls.enableZoom = false;
     this.controls.enableDamping = true;
     this.controls.dampingFactor = ORBIT_DAMPING;
+
+    if ((<any>window).DEBUG) {
+      this.stats = Stats();
+      const container = document.createElement('div');
+
+      document.body.appendChild(container);
+      container.appendChild( this.stats.dom );
+    }
   }
 
   public animate() {
@@ -83,23 +93,38 @@ export class App {
       this.stats?.update();
       this.controls?.update();
     } catch (e) {
-      cancelAnimationFrame(this.frameId);
+      this.stopAnimation();
       console.error(e);
       return;
     }
+  }
+
+  public stopAnimation() {
+    cancelAnimationFrame(this.frameId);
   }
 
   onResize() {
 
     const onWindowResize = () => {
         this.scene.camera.aspect = this.aspect;
-
         this.scene.camera.updateProjectionMatrix();
-
         this.renderer.setSize( ...this.dimensions );
     }
 
     window.addEventListener( 'resize', onWindowResize, false );
+  }
+
+  onShow() {
+    this.intersectionObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          this.animate();
+        } else {
+          this.stopAnimation();
+        }
+      });
+    }, { threshold: INTERSECTION_THRESHOLD });
+    this.intersectionObserver.observe(this.renderer.domElement);
   }
 
   antialiasPass () {

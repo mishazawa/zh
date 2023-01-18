@@ -3,14 +3,20 @@ import "./index.scss";
 
 import { App } from './App/App';
 
+(<any>window).DEBUG = false;
 
-const container = document.createElement('div');
-const canvas = document.createElement('canvas');
+window.addEventListener('DOMContentLoaded', () => {
 
-canvas.className = 'canvas';
-container.className = 'cont';
-container.appendChild(canvas);
-document.body.appendChild(container);
+  const container = document.createElement('div');
+  container.className = 'cont';
 
-const app = new App(canvas);
 
+  const canvas = document.createElement('canvas');
+  canvas.className = 'canvas';
+
+
+  container.appendChild(canvas);
+  document.body.appendChild(container);
+
+  const app = new App(canvas);
+})

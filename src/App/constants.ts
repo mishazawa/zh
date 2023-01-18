@@ -18,3 +18,6 @@ export const GRADIENT_STEP = new Vector2(0.1, 0.9);
 export const SATURATION = .75; // 0..1
 
 export const ORBIT_DAMPING = .1;
+
+export const INTERSECTION_THRESHOLD = .35;
+
