@@ -3,7 +3,15 @@ import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 import { RGBELoader } from 'three/examples/jsm/loaders/RGBELoader';
 import { CAMERA_FAR, CAMERA_FOV, CAMERA_NEAR } from './constants';
 
-export const loadGltf = url => new Promise((res, rej) => new GLTFLoader().load(url, data => res(data), undefined, rej));
+import { DRACOLoader } from "three/examples/jsm/loaders/DRACOLoader";
+
+const dracoLoader = new DRACOLoader();
+const loader = new GLTFLoader()
+dracoLoader.setDecoderConfig({ type: 'js' });
+dracoLoader.setDecoderPath('https://www.gstatic.com/draco/v1/decoders/');
+loader.setDRACOLoader( dracoLoader );
+
+export const loadGltf = url => new Promise((res, rej) => loader.load(url, data => res(data), undefined, rej));
 export const loadHdri = url => new Promise((res, rej) => new RGBELoader().load(url, data => res(data), undefined, rej));
 
 export const createCamera = (aspect) => new PerspectiveCamera(

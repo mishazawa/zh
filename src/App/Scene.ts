@@ -1,14 +1,17 @@
 import { AnimationClip, AnimationMixer, BoxGeometry, Camera, Color, EquirectangularReflectionMapping, Fog, FogExp2, Mesh, MeshBasicMaterial, MeshNormalMaterial, MeshStandardMaterial, Object3D, PerspectiveCamera, Scene, Vector3 } from "three";
 import { loadGltf, loadHdri } from "./utils";
+// import URL_MODEL from 'assets/balls_v2.glb';
 
-import URL_MODEL from 'assets/balls_v2.glb';
+import URL_MODEL from 'assets/not_work.glb';
 import URL_HDRI  from 'assets/studio.hdr';
+
 import { ANIMATION_SPEED, MATERIAL_PROPS } from "./constants";
+
 
 export class AppScene {
   public scene: Scene;
   private mixer: AnimationMixer;
-
+  
   constructor(public camera) {
     this.scene = new Scene();
 
