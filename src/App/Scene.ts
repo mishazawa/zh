@@ -2,7 +2,7 @@ import { AnimationClip, AnimationMixer, BoxGeometry, Camera, Color, Equirectangu
 import { loadGltf, loadHdri } from "./utils";
 // import URL_MODEL from 'assets/balls_v2.glb';
 
-import URL_MODEL from 'assets/not_work.glb';
+import URL_MODEL from 'assets/Lending_Earth.glb';  
 import URL_HDRI  from 'assets/studio.hdr';
 
 import { ANIMATION_SPEED, MATERIAL_PROPS } from "./constants";
